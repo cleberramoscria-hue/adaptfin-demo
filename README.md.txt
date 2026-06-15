@@ -1,10 +1,27 @@
 # 🧠 AdaptFin - Assistente Financeiro Adaptativo
+## 📸 Screenshots
 
-[![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)](https://streamlit.io)
-[![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Machine Learning](https://img.shields.io/badge/Machine_Learning-Scikit_Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](http://makeapullrequest.com)
+### 🏠 Dashboard Principal
+
+![Dashboard](assets/images/dashboard.png)
+
+---
+
+### 💳 Gestão de Transações
+
+![Transações](assets/images/transacoes.png)
+
+---
+
+### 📊 Relatórios Financeiros
+
+![Relatórios](assets/images/relatorios.png)
+
+---
+
+### 🤖 Machine Learning e Insights
+
+![ML Insights](assets/images/ml_insights.png)
 
 > **"Em vez de você se adaptar ao app, o app se adapta a você"**
 
