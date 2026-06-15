@@ -1,0 +1,33 @@
+{
+  "user_preferences": {
+    "pergunta_favorita": "saldo",
+    "categoria_preferida": "Moradia"
+  },
+  "frequent_questions": {
+    "quanto posso gastar hoje": {
+      "count": 15,
+      "answer": "...",
+      "first_asked": "2024-01-01T10:00:00",
+      "last_asked": "2024-01-15T14:30:00"
+    }
+  },
+  "learned_patterns": [
+    {
+      "pattern": "Usuário gasta mais aos finais de semana",
+      "date": "2024-01-10T08:00:00"
+    }
+  ],
+  "important_dates": [
+    {
+      "date": "2024-01-20",
+      "description": "Vencimento do cartão"
+    }
+  ],
+  "saved_insights": [
+    {
+      "insight": "Usuário economiza 20% da renda todo mês",
+      "date": "2024-01-15T09:00:00"
+    }
+  ],
+  "last_interaction": "2024-01-15T18:30:00"
+}
