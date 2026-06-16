@@ -1,10 +1,146 @@
 [
   {
-    "Descrição": "casa",
-    "Valor": 100.0,
+    "Descrição": "Salário",
+    "Valor": 5500.0,
+    "Categoria": "Renda",
+    "Data": "2024-01-01 00:00:00",
+    "Status": "Pago",
+    "id": "1637ad95"
+  },
+  {
+    "Descrição": "Freelance",
+    "Valor": 1200.0,
+    "Categoria": "Renda",
+    "Data": "2024-01-08 00:00:00",
+    "Status": "Pago",
+    "id": "6e9fa382"
+  },
+  {
+    "Descrição": "Investimentos",
+    "Valor": 350.0,
+    "Categoria": "Renda",
+    "Data": "2024-01-15 00:00:00",
+    "Status": "Pago",
+    "id": "622da82a"
+  },
+  {
+    "Descrição": "salario ",
+    "Valor": 1600.0,
     "Categoria": "💼 Salário",
-    "Data": "2026-05-30 00:00:00",
-    "id": "25917995",
-    "Status": "Pago"
+    "Data": "2026-06-15 00:00:00",
+    "Status": "Pago",
+    "id": "351a5b8e"
+  },
+  {
+    "Descrição": "Aluguel",
+    "Valor": -1800.0,
+    "Categoria": "Moradia",
+    "Data": "2024-01-22 00:00:00",
+    "Status": "Pago",
+    "id": "d11c4bb4"
+  },
+  {
+    "Descrição": "Supermercado",
+    "Valor": -650.0,
+    "Categoria": "Alimentação",
+    "Data": "2024-01-29 00:00:00",
+    "Status": "Pago",
+    "id": "aa1d810a"
+  },
+  {
+    "Descrição": "iFood",
+    "Valor": -250.0,
+    "Categoria": "Alimentação",
+    "Data": "2024-02-05 00:00:00",
+    "Status": "Pago",
+    "id": "accf25d3"
+  },
+  {
+    "Descrição": "Netflix",
+    "Valor": -39.9,
+    "Categoria": "Serviços",
+    "Data": "2024-02-12 00:00:00",
+    "Status": "Pago",
+    "id": "d508c33d"
+  },
+  {
+    "Descrição": "Spotify",
+    "Valor": -21.9,
+    "Categoria": "Serviços",
+    "Data": "2024-02-19 00:00:00",
+    "Status": "Pago",
+    "id": "facb3684"
+  },
+  {
+    "Descrição": "Uber",
+    "Valor": -120.0,
+    "Categoria": "Transporte",
+    "Data": "2024-02-26 00:00:00",
+    "Status": "Pago",
+    "id": "71d7a101"
+  },
+  {
+    "Descrição": "Farmácia",
+    "Valor": -95.0,
+    "Categoria": "Saúde",
+    "Data": "2024-03-04 00:00:00",
+    "Status": "Pago",
+    "id": "f38c84aa"
+  },
+  {
+    "Descrição": "Cinema",
+    "Valor": -60.0,
+    "Categoria": "Lazer",
+    "Data": "2024-03-11 00:00:00",
+    "Status": "Pago",
+    "id": "afb71677"
+  },
+  {
+    "Descrição": "Restaurante",
+    "Valor": -180.0,
+    "Categoria": "Alimentação",
+    "Data": "2024-03-18 00:00:00",
+    "Status": "Pago",
+    "id": "173d9062"
+  },
+  {
+    "Descrição": "Academia",
+    "Valor": -99.9,
+    "Categoria": "Saúde",
+    "Data": "2024-03-25 00:00:00",
+    "Status": "Pago",
+    "id": "de5786ad"
+  },
+  {
+    "Descrição": "Conta de Luz",
+    "Valor": -180.0,
+    "Categoria": "Moradia",
+    "Data": "2024-04-01 00:00:00",
+    "Status": "Pago",
+    "id": "c6fa496f"
+  },
+  {
+    "Descrição": "Internet",
+    "Valor": -100.0,
+    "Categoria": "Serviços",
+    "Data": "2024-04-08 00:00:00",
+    "Status": "Pago",
+    "id": "74c648ba"
+  },
+  {
+    "Descrição": "Celular",
+    "Valor": -80.0,
+    "Categoria": "Serviços",
+    "Data": "2024-04-15 00:00:00",
+    "Status": "Pago",
+    "id": "adf1bae1"
+  },
+  {
+    "Descrição": "Plano de Saúde",
+    "Valor": -350.0,
+    "Categoria": "Saúde",
+    "Data": "2024-04-22 00:00:00",
+    "Status": "Pago",
+    "id": "a2b551dd"
   }
 ]
