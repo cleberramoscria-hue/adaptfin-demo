@@ -4,259 +4,24 @@ Versão 2.0.0
 """
 import streamlit as st
 import pandas as pd
+import plotly.express as px
+from datetime import datetime
 import sys
 import os
 import uuid
-from datetime import datetime, timedelta
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from src.database import DatabaseManager
-from src.shared import formatar_moeda, carregar_todas_transacoes
 from utils.theme_utils import aplicar_tema_global
 
 # ====================== CONFIGURAÇÃO ======================
 st.set_page_config(
-    page_title="AdaptFin",
+    page_title="AdaptFin - Dashboard",
     page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-# ====================== DADOS DE DEMONSTRAÇÃO (Junho 2025 - Junho 2026) ======================
-def carregar_dados_completos():
-    """Carrega dados de Junho 2025 a Junho 2026 com cenários variados"""
-    
-    dados = []
-    
-    # ==================== JUNHO 2025 (Mês Normal) ====================
-    dados.extend([
-        {"Data": "2025-06-05", "Descricao": "Salário Junho", "Valor": 5500.00, "Categoria": "Renda"},
-        {"Data": "2025-06-10", "Descricao": "Aluguel", "Valor": -1850.00, "Categoria": "Moradia"},
-        {"Data": "2025-06-12", "Descricao": "Supermercado", "Valor": -650.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-06-14", "Descricao": "Netflix", "Valor": -45.90, "Categoria": "Servicos"},
-        {"Data": "2025-06-14", "Descricao": "Internet", "Valor": -120.00, "Categoria": "Servicos"},
-        {"Data": "2025-06-14", "Descricao": "Energia", "Valor": -160.00, "Categoria": "Moradia"},
-        {"Data": "2025-06-15", "Descricao": "Agua", "Valor": -80.00, "Categoria": "Moradia"},
-        {"Data": "2025-06-18", "Descricao": "Consulta Médica", "Valor": -250.00, "Categoria": "Saude"},
-        {"Data": "2025-06-20", "Descricao": "Ifood", "Valor": -140.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-06-22", "Descricao": "Uber", "Valor": -90.00, "Categoria": "Transporte"},
-        {"Data": "2025-06-25", "Descricao": "Academia", "Valor": -110.00, "Categoria": "Saude"},
-        {"Data": "2025-06-28", "Descricao": "Farmácia", "Valor": -65.00, "Categoria": "Saude"},
-        {"Data": "2025-06-30", "Descricao": "Cinema", "Valor": -70.00, "Categoria": "Lazer"},
-    ])
-    
-    # ==================== JULHO 2025 (Festas e Gastos Sociais) ====================
-    dados.extend([
-        {"Data": "2025-07-05", "Descricao": "Salário Julho", "Valor": 5500.00, "Categoria": "Renda"},
-        {"Data": "2025-07-10", "Descricao": "Aluguel", "Valor": -1850.00, "Categoria": "Moradia"},
-        {"Data": "2025-07-12", "Descricao": "Supermercado", "Valor": -750.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-07-14", "Descricao": "Netflix", "Valor": -45.90, "Categoria": "Servicos"},
-        {"Data": "2025-07-14", "Descricao": "Internet", "Valor": -120.00, "Categoria": "Servicos"},
-        {"Data": "2025-07-14", "Descricao": "Energia", "Valor": -210.00, "Categoria": "Moradia"},
-        {"Data": "2025-07-15", "Descricao": "Agua", "Valor": -80.00, "Categoria": "Moradia"},
-        {"Data": "2025-07-18", "Descricao": "Festa Julina", "Valor": -500.00, "Categoria": "Lazer"},
-        {"Data": "2025-07-18", "Descricao": "Presente Amigo", "Valor": -150.00, "Categoria": "Outros"},
-        {"Data": "2025-07-20", "Descricao": "Ifood", "Valor": -220.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-07-22", "Descricao": "Uber", "Valor": -120.00, "Categoria": "Transporte"},
-        {"Data": "2025-07-25", "Descricao": "Academia", "Valor": -110.00, "Categoria": "Saude"},
-        {"Data": "2025-07-28", "Descricao": "Farmácia", "Valor": -45.00, "Categoria": "Saude"},
-        {"Data": "2025-07-30", "Descricao": "Restaurante", "Valor": -180.00, "Categoria": "Alimentacao"},
-    ])
-    
-    # ==================== AGOSTO 2025 (Compras e Economia) ====================
-    dados.extend([
-        {"Data": "2025-08-05", "Descricao": "Salário Agosto", "Valor": 5500.00, "Categoria": "Renda"},
-        {"Data": "2025-08-10", "Descricao": "Aluguel", "Valor": -1850.00, "Categoria": "Moradia"},
-        {"Data": "2025-08-12", "Descricao": "Supermercado", "Valor": -620.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-08-14", "Descricao": "Netflix", "Valor": -45.90, "Categoria": "Servicos"},
-        {"Data": "2025-08-14", "Descricao": "Internet", "Valor": -120.00, "Categoria": "Servicos"},
-        {"Data": "2025-08-14", "Descricao": "Energia", "Valor": -155.00, "Categoria": "Moradia"},
-        {"Data": "2025-08-15", "Descricao": "Agua", "Valor": -80.00, "Categoria": "Moradia"},
-        {"Data": "2025-08-18", "Descricao": "Compras Roupa", "Valor": -350.00, "Categoria": "Outros"},
-        {"Data": "2025-08-20", "Descricao": "Ifood", "Valor": -130.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-08-22", "Descricao": "Uber", "Valor": -85.00, "Categoria": "Transporte"},
-        {"Data": "2025-08-25", "Descricao": "Academia", "Valor": -110.00, "Categoria": "Saude"},
-        {"Data": "2025-08-28", "Descricao": "Farmácia", "Valor": -50.00, "Categoria": "Saude"},
-        {"Data": "2025-08-30", "Descricao": "Show", "Valor": -200.00, "Categoria": "Lazer"},
-    ])
-    
-    # ==================== SETEMBRO 2025 (Educação) ====================
-    dados.extend([
-        {"Data": "2025-09-05", "Descricao": "Salário Setembro", "Valor": 5500.00, "Categoria": "Renda"},
-        {"Data": "2025-09-10", "Descricao": "Aluguel", "Valor": -1850.00, "Categoria": "Moradia"},
-        {"Data": "2025-09-12", "Descricao": "Supermercado", "Valor": -680.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-09-14", "Descricao": "Netflix", "Valor": -45.90, "Categoria": "Servicos"},
-        {"Data": "2025-09-14", "Descricao": "Internet", "Valor": -120.00, "Categoria": "Servicos"},
-        {"Data": "2025-09-14", "Descricao": "Energia", "Valor": -175.00, "Categoria": "Moradia"},
-        {"Data": "2025-09-15", "Descricao": "Agua", "Valor": -80.00, "Categoria": "Moradia"},
-        {"Data": "2025-09-18", "Descricao": "Curso Online", "Valor": -350.00, "Categoria": "Educacao"},
-        {"Data": "2025-09-18", "Descricao": "Livros", "Valor": -150.00, "Categoria": "Educacao"},
-        {"Data": "2025-09-20", "Descricao": "Ifood", "Valor": -150.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-09-22", "Descricao": "Uber", "Valor": -95.00, "Categoria": "Transporte"},
-        {"Data": "2025-09-25", "Descricao": "Academia", "Valor": -110.00, "Categoria": "Saude"},
-        {"Data": "2025-09-28", "Descricao": "Farmácia", "Valor": -55.00, "Categoria": "Saude"},
-    ])
-    
-    # ==================== OUTUBRO 2025 (Aniversário) ====================
-    dados.extend([
-        {"Data": "2025-10-05", "Descricao": "Salário Outubro", "Valor": 5500.00, "Categoria": "Renda"},
-        {"Data": "2025-10-10", "Descricao": "Aluguel", "Valor": -1850.00, "Categoria": "Moradia"},
-        {"Data": "2025-10-12", "Descricao": "Supermercado", "Valor": -750.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-10-14", "Descricao": "Netflix", "Valor": -45.90, "Categoria": "Servicos"},
-        {"Data": "2025-10-14", "Descricao": "Internet", "Valor": -120.00, "Categoria": "Servicos"},
-        {"Data": "2025-10-14", "Descricao": "Energia", "Valor": -190.00, "Categoria": "Moradia"},
-        {"Data": "2025-10-15", "Descricao": "Agua", "Valor": -80.00, "Categoria": "Moradia"},
-        {"Data": "2025-10-18", "Descricao": "Festa Aniversário", "Valor": -600.00, "Categoria": "Lazer"},
-        {"Data": "2025-10-18", "Descricao": "Presentes", "Valor": -250.00, "Categoria": "Outros"},
-        {"Data": "2025-10-20", "Descricao": "Ifood", "Valor": -200.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-10-22", "Descricao": "Uber", "Valor": -110.00, "Categoria": "Transporte"},
-        {"Data": "2025-10-25", "Descricao": "Academia", "Valor": -110.00, "Categoria": "Saude"},
-        {"Data": "2025-10-28", "Descricao": "Farmácia", "Valor": -70.00, "Categoria": "Saude"},
-    ])
-    
-    # ==================== NOVEMBRO 2025 (Black Friday) ====================
-    dados.extend([
-        {"Data": "2025-11-05", "Descricao": "Salário Novembro", "Valor": 5500.00, "Categoria": "Renda"},
-        {"Data": "2025-11-10", "Descricao": "Aluguel", "Valor": -1850.00, "Categoria": "Moradia"},
-        {"Data": "2025-11-12", "Descricao": "Supermercado", "Valor": -800.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-11-14", "Descricao": "Netflix", "Valor": -45.90, "Categoria": "Servicos"},
-        {"Data": "2025-11-14", "Descricao": "Internet", "Valor": -120.00, "Categoria": "Servicos"},
-        {"Data": "2025-11-14", "Descricao": "Energia", "Valor": -200.00, "Categoria": "Moradia"},
-        {"Data": "2025-11-15", "Descricao": "Agua", "Valor": -80.00, "Categoria": "Moradia"},
-        {"Data": "2025-11-18", "Descricao": "Black Friday - TV", "Valor": -1200.00, "Categoria": "Outros"},
-        {"Data": "2025-11-18", "Descricao": "Black Friday - Roupas", "Valor": -600.00, "Categoria": "Outros"},
-        {"Data": "2025-11-20", "Descricao": "Ifood", "Valor": -250.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-11-22", "Descricao": "Uber", "Valor": -150.00, "Categoria": "Transporte"},
-        {"Data": "2025-11-25", "Descricao": "Academia", "Valor": -110.00, "Categoria": "Saude"},
-        {"Data": "2025-11-28", "Descricao": "Farmácia", "Valor": -75.00, "Categoria": "Saude"},
-    ])
-    
-    # ==================== DEZEMBRO 2025 (Natal) ====================
-    dados.extend([
-        {"Data": "2025-12-05", "Descricao": "Salário Dezembro", "Valor": 5500.00, "Categoria": "Renda"},
-        {"Data": "2025-12-05", "Descricao": "13º Salário", "Valor": 5500.00, "Categoria": "Renda"},
-        {"Data": "2025-12-10", "Descricao": "Aluguel", "Valor": -1850.00, "Categoria": "Moradia"},
-        {"Data": "2025-12-12", "Descricao": "Supermercado", "Valor": -900.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-12-14", "Descricao": "Netflix", "Valor": -45.90, "Categoria": "Servicos"},
-        {"Data": "2025-12-14", "Descricao": "Internet", "Valor": -120.00, "Categoria": "Servicos"},
-        {"Data": "2025-12-14", "Descricao": "Energia", "Valor": -230.00, "Categoria": "Moradia"},
-        {"Data": "2025-12-15", "Descricao": "Agua", "Valor": -80.00, "Categoria": "Moradia"},
-        {"Data": "2025-12-18", "Descricao": "Ceia Natal", "Valor": -800.00, "Categoria": "Alimentacao"},
-        {"Data": "2025-12-18", "Descricao": "Presentes Natal", "Valor": -1200.00, "Categoria": "Outros"},
-        {"Data": "2025-12-20", "Descricao": "Viagem Reveillon", "Valor": -2000.00, "Categoria": "Lazer"},
-        {"Data": "2025-12-22", "Descricao": "Uber", "Valor": -200.00, "Categoria": "Transporte"},
-        {"Data": "2025-12-25", "Descricao": "Academia", "Valor": -110.00, "Categoria": "Saude"},
-        {"Data": "2025-12-28", "Descricao": "Farmácia", "Valor": -85.00, "Categoria": "Saude"},
-    ])
-    
-    # ==================== JANEIRO 2026 (Início do ano) ====================
-    dados.extend([
-        {"Data": "2026-01-05", "Descricao": "Salário Janeiro", "Valor": 5800.00, "Categoria": "Renda"},
-        {"Data": "2026-01-08", "Descricao": "Bônus Ano Novo", "Valor": 1500.00, "Categoria": "Renda"},
-        {"Data": "2026-01-10", "Descricao": "Aluguel", "Valor": -1900.00, "Categoria": "Moradia"},
-        {"Data": "2026-01-12", "Descricao": "Supermercado", "Valor": -780.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-01-14", "Descricao": "Netflix", "Valor": -49.90, "Categoria": "Servicos"},
-        {"Data": "2026-01-14", "Descricao": "Internet", "Valor": -130.00, "Categoria": "Servicos"},
-        {"Data": "2026-01-14", "Descricao": "Energia", "Valor": -210.00, "Categoria": "Moradia"},
-        {"Data": "2026-01-15", "Descricao": "Agua", "Valor": -85.00, "Categoria": "Moradia"},
-        {"Data": "2026-01-18", "Descricao": "Uber", "Valor": -100.00, "Categoria": "Transporte"},
-        {"Data": "2026-01-20", "Descricao": "Ifood", "Valor": -190.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-01-22", "Descricao": "Cinema", "Valor": -80.00, "Categoria": "Lazer"},
-        {"Data": "2026-01-25", "Descricao": "Academia", "Valor": -120.00, "Categoria": "Saude"},
-        {"Data": "2026-01-28", "Descricao": "Farmácia", "Valor": -60.00, "Categoria": "Saude"},
-        {"Data": "2026-01-30", "Descricao": "Restaurante", "Valor": -160.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-01-31", "Descricao": "Presente", "Valor": -200.00, "Categoria": "Outros"},
-    ])
-    
-    # ==================== FEVEREIRO 2026 (Carnaval) ====================
-    dados.extend([
-        {"Data": "2026-02-05", "Descricao": "Salário Fevereiro", "Valor": 5800.00, "Categoria": "Renda"},
-        {"Data": "2026-02-10", "Descricao": "Aluguel", "Valor": -1900.00, "Categoria": "Moradia"},
-        {"Data": "2026-02-12", "Descricao": "Supermercado", "Valor": -720.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-02-14", "Descricao": "Netflix", "Valor": -49.90, "Categoria": "Servicos"},
-        {"Data": "2026-02-14", "Descricao": "Internet", "Valor": -130.00, "Categoria": "Servicos"},
-        {"Data": "2026-02-14", "Descricao": "Energia", "Valor": -185.00, "Categoria": "Moradia"},
-        {"Data": "2026-02-15", "Descricao": "Agua", "Valor": -85.00, "Categoria": "Moradia"},
-        {"Data": "2026-02-18", "Descricao": "Carnaval Viagem", "Valor": -1500.00, "Categoria": "Lazer"},
-        {"Data": "2026-02-18", "Descricao": "Hospedagem", "Valor": -800.00, "Categoria": "Lazer"},
-        {"Data": "2026-02-20", "Descricao": "Ifood", "Valor": -230.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-02-22", "Descricao": "Uber", "Valor": -130.00, "Categoria": "Transporte"},
-        {"Data": "2026-02-25", "Descricao": "Academia", "Valor": -120.00, "Categoria": "Saude"},
-        {"Data": "2026-02-27", "Descricao": "Farmácia", "Valor": -50.00, "Categoria": "Saude"},
-    ])
-    
-    # ==================== MARÇO 2026 (Manutenção Carro) ====================
-    dados.extend([
-        {"Data": "2026-03-05", "Descricao": "Salário Março", "Valor": 5800.00, "Categoria": "Renda"},
-        {"Data": "2026-03-10", "Descricao": "Aluguel", "Valor": -1900.00, "Categoria": "Moradia"},
-        {"Data": "2026-03-12", "Descricao": "Supermercado", "Valor": -800.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-03-14", "Descricao": "Netflix", "Valor": -49.90, "Categoria": "Servicos"},
-        {"Data": "2026-03-14", "Descricao": "Internet", "Valor": -130.00, "Categoria": "Servicos"},
-        {"Data": "2026-03-14", "Descricao": "Energia", "Valor": -220.00, "Categoria": "Moradia"},
-        {"Data": "2026-03-15", "Descricao": "Agua", "Valor": -85.00, "Categoria": "Moradia"},
-        {"Data": "2026-03-18", "Descricao": "Manutenção Carro", "Valor": -700.00, "Categoria": "Transporte"},
-        {"Data": "2026-03-18", "Descricao": "Óleo e Filtros", "Valor": -250.00, "Categoria": "Transporte"},
-        {"Data": "2026-03-20", "Descricao": "Ifood", "Valor": -160.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-03-22", "Descricao": "Teatro", "Valor": -200.00, "Categoria": "Lazer"},
-        {"Data": "2026-03-25", "Descricao": "Academia", "Valor": -120.00, "Categoria": "Saude"},
-        {"Data": "2026-03-28", "Descricao": "Farmácia", "Valor": -75.00, "Categoria": "Saude"},
-    ])
-    
-    # ==================== ABRIL 2026 (Viagem Curta) ====================
-    dados.extend([
-        {"Data": "2026-04-05", "Descricao": "Salário Abril", "Valor": 5800.00, "Categoria": "Renda"},
-        {"Data": "2026-04-10", "Descricao": "Aluguel", "Valor": -1900.00, "Categoria": "Moradia"},
-        {"Data": "2026-04-12", "Descricao": "Supermercado", "Valor": -650.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-04-14", "Descricao": "Netflix", "Valor": -49.90, "Categoria": "Servicos"},
-        {"Data": "2026-04-14", "Descricao": "Internet", "Valor": -130.00, "Categoria": "Servicos"},
-        {"Data": "2026-04-14", "Descricao": "Energia", "Valor": -170.00, "Categoria": "Moradia"},
-        {"Data": "2026-04-15", "Descricao": "Agua", "Valor": -85.00, "Categoria": "Moradia"},
-        {"Data": "2026-04-18", "Descricao": "Passagem Aérea", "Valor": -600.00, "Categoria": "Transporte"},
-        {"Data": "2026-04-18", "Descricao": "Hotel", "Valor": -450.00, "Categoria": "Lazer"},
-        {"Data": "2026-04-20", "Descricao": "Ifood", "Valor": -130.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-04-22", "Descricao": "Uber", "Valor": -95.00, "Categoria": "Transporte"},
-        {"Data": "2026-04-25", "Descricao": "Academia", "Valor": -120.00, "Categoria": "Saude"},
-        {"Data": "2026-04-28", "Descricao": "Farmácia", "Valor": -55.00, "Categoria": "Saude"},
-    ])
-    
-    # ==================== MAIO 2026 (Férias) ====================
-    dados.extend([
-        {"Data": "2026-05-05", "Descricao": "Salário Maio", "Valor": 5800.00, "Categoria": "Renda"},
-        {"Data": "2026-05-10", "Descricao": "Aluguel", "Valor": -1900.00, "Categoria": "Moradia"},
-        {"Data": "2026-05-12", "Descricao": "Supermercado", "Valor": -820.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-05-14", "Descricao": "Netflix", "Valor": -49.90, "Categoria": "Servicos"},
-        {"Data": "2026-05-14", "Descricao": "Internet", "Valor": -130.00, "Categoria": "Servicos"},
-        {"Data": "2026-05-14", "Descricao": "Energia", "Valor": -200.00, "Categoria": "Moradia"},
-        {"Data": "2026-05-15", "Descricao": "Agua", "Valor": -85.00, "Categoria": "Moradia"},
-        {"Data": "2026-05-18", "Descricao": "Viagem Internacional", "Valor": -2500.00, "Categoria": "Lazer"},
-        {"Data": "2026-05-18", "Descricao": "Passagens", "Valor": -1200.00, "Categoria": "Transporte"},
-        {"Data": "2026-05-20", "Descricao": "Ifood", "Valor": -300.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-05-22", "Descricao": "Uber", "Valor": -150.00, "Categoria": "Transporte"},
-        {"Data": "2026-05-25", "Descricao": "Academia", "Valor": -120.00, "Categoria": "Saude"},
-        {"Data": "2026-05-28", "Descricao": "Farmácia", "Valor": -70.00, "Categoria": "Saude"},
-    ])
-    
-    # ==================== JUNHO 2026 (Mês de Recuperação) ====================
-    dados.extend([
-        {"Data": "2026-06-05", "Descricao": "Salário Junho", "Valor": 5800.00, "Categoria": "Renda"},
-        {"Data": "2026-06-05", "Descricao": "Freelance Extra", "Valor": 800.00, "Categoria": "Renda"},
-        {"Data": "2026-06-10", "Descricao": "Aluguel", "Valor": -1900.00, "Categoria": "Moradia"},
-        {"Data": "2026-06-12", "Descricao": "Supermercado", "Valor": -680.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-06-14", "Descricao": "Netflix", "Valor": -49.90, "Categoria": "Servicos"},
-        {"Data": "2026-06-14", "Descricao": "Internet", "Valor": -130.00, "Categoria": "Servicos"},
-        {"Data": "2026-06-14", "Descricao": "Energia", "Valor": -175.00, "Categoria": "Moradia"},
-        {"Data": "2026-06-15", "Descricao": "Agua", "Valor": -85.00, "Categoria": "Moradia"},
-        {"Data": "2026-06-18", "Descricao": "Consulta Médica", "Valor": -350.00, "Categoria": "Saude"},
-        {"Data": "2026-06-20", "Descricao": "Ifood", "Valor": -140.00, "Categoria": "Alimentacao"},
-        {"Data": "2026-06-22", "Descricao": "Uber", "Valor": -100.00, "Categoria": "Transporte"},
-        {"Data": "2026-06-25", "Descricao": "Academia", "Valor": -120.00, "Categoria": "Saude"},
-        {"Data": "2026-06-28", "Descricao": "Farmácia", "Valor": -65.00, "Categoria": "Saude"},
-        {"Data": "2026-06-30", "Descricao": "Cinema", "Valor": -80.00, "Categoria": "Lazer"},
-        {"Data": "2026-06-30", "Descricao": "Investimento", "Valor": -500.00, "Categoria": "Investimento"},
-    ])
-    
-    return pd.DataFrame(dados)
 
 # ====================== INICIALIZAÇÃO ======================
 db = DatabaseManager()
@@ -275,21 +40,56 @@ if "configuracoes" not in st.session_state:
         "ml_ativado": True,
         "tema": "Claro"
     }
-if "dados_demo_carregados" not in st.session_state:
-    st.session_state.dados_demo_carregados = False
 
-# Carregar dados de demonstração se não houver dados
-if st.session_state.receitas.empty and st.session_state.gastos_variaveis.empty and not st.session_state.dados_demo_carregados:
-    df_completo = carregar_dados_completos()
-    st.session_state.receitas = df_completo[df_completo["Valor"] > 0].copy()
-    st.session_state.gastos_variaveis = df_completo[df_completo["Valor"] < 0].copy()
-    # Adicionar IDs únicos
-    st.session_state.receitas["id"] = [str(uuid.uuid4())[:8] for _ in range(len(st.session_state.receitas))]
-    st.session_state.gastos_variaveis["id"] = [str(uuid.uuid4())[:8] for _ in range(len(st.session_state.gastos_variaveis))]
-    st.session_state.dados_demo_carregados = True
-
-# Aplicar tema GLOBALMENTE (em todas as páginas)
+# Aplicar tema
 aplicar_tema_global()
+
+# ====================== FUNÇÕES ======================
+def formatar_moeda(valor):
+    try:
+        return f"R$ {float(valor):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    except:
+        return "R$ 0,00"
+
+def formatar_data_br(data):
+    if pd.isna(data):
+        return "N/A"
+    try:
+        if isinstance(data, str):
+            data = pd.to_datetime(data, errors='coerce')
+        if pd.isna(data):
+            return "N/A"
+        return data.strftime("%d/%m/%Y")
+    except:
+        return "N/A"
+
+def carregar_todas():
+    todas = []
+    if not st.session_state.receitas.empty:
+        todas.append(st.session_state.receitas)
+    if not st.session_state.despesas_fixas.empty:
+        todas.append(st.session_state.despesas_fixas)
+    if not st.session_state.gastos_variaveis.empty:
+        todas.append(st.session_state.gastos_variaveis)
+    
+    if todas:
+        df = pd.concat(todas, ignore_index=True)
+        if 'Valor' in df.columns:
+            df['Valor'] = pd.to_numeric(df['Valor'], errors='coerce')
+            df = df.dropna(subset=['Valor'])
+        if 'Data' in df.columns:
+            df['Data'] = pd.to_datetime(df['Data'], errors='coerce')
+        return df
+    return pd.DataFrame()
+
+def obter_nome_descricao(df):
+    if df is None or df.empty:
+        return None
+    colunas = df.columns.tolist()
+    for nome in ['Descricao', 'Descrição', 'descricao', 'descrição']:
+        if nome in colunas:
+            return nome
+    return None
 
 # ====================== SIDEBAR ======================
 with st.sidebar:
@@ -297,8 +97,7 @@ with st.sidebar:
     st.caption("Seu assistente financeiro")
     st.markdown("---")
     
-    # Menu
-    st.page_link("pages/1_🏠_Dashboard.py", label="📊 Dashboard")
+    # Menu - NÃO inclui app.py (já é a página inicial)
     st.page_link("pages/2_💰_Transacoes.py", label="💰 Transações")
     st.page_link("pages/3_📊_Relatorios.py", label="📈 Relatórios")
     st.page_link("pages/4_🤖_Insights_ML.py", label="🤖 Insights ML")
@@ -306,3 +105,167 @@ with st.sidebar:
     st.page_link("pages/6_💬_Chat_Financeiro.py", label="💬 Chat")
     st.page_link("pages/7_⚙️_Configuracoes.py", label="⚙️ Configurações")
     
+    st.markdown("---")
+    
+    df_total = carregar_todas()
+    if not df_total.empty:
+        entradas = df_total[df_total["Valor"] > 0]["Valor"].sum()
+        saidas = abs(df_total[df_total["Valor"] < 0]["Valor"].sum())
+        st.metric("💰 Entradas", formatar_moeda(entradas))
+        st.metric("📤 Saídas", formatar_moeda(saidas))
+        st.metric("💵 Saldo", formatar_moeda(entradas - saidas))
+    
+    st.markdown("---")
+    st.caption("AdaptFin v2.0")
+
+# ====================== DASHBOARD ======================
+st.title("🏠 Dashboard Financeiro")
+st.markdown("---")
+
+dados = carregar_todas()
+
+if not dados.empty:
+    # Métricas
+    entradas = dados[dados["Valor"] > 0]["Valor"].sum()
+    saidas = abs(dados[dados["Valor"] < 0]["Valor"].sum())
+    saldo = entradas - saidas
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("💰 Total de Entradas", formatar_moeda(entradas))
+    with col2:
+        st.metric("📤 Total de Saídas", formatar_moeda(saidas))
+    with col3:
+        delta_cor = "normal" if saldo >= 0 else "inverse"
+        st.metric("💵 Saldo Total", formatar_moeda(saldo), delta_color=delta_cor)
+    
+    # Alertas
+    if saldo < 0:
+        st.error(f"🚨 ATENÇÃO: Você está gastando R$ {abs(saldo):,.2f} a mais do que ganha!")
+    elif entradas > 0 and saldo < entradas * 0.1:
+        st.warning(f"⚠️ Seu saldo é de apenas {formatar_moeda(saldo)}. Tente economizar mais!")
+    elif entradas > 0:
+        st.success(f"✅ Parabéns! Você está no azul com {formatar_moeda(saldo)} de saldo!")
+    
+    st.markdown("---")
+    
+    # Gráficos
+    col_graf1, col_graf2 = st.columns(2)
+    
+    with col_graf1:
+        st.subheader("🥧 Gastos por Categoria")
+        despesas = dados[dados["Valor"] < 0].copy()
+        if not despesas.empty:
+            gastos = despesas.groupby("Categoria")["Valor"].sum().abs()
+            if not gastos.empty:
+                fig = px.pie(values=gastos.values, names=gastos.index, title="Distribuição de Gastos")
+                fig.update_traces(textposition='inside', textinfo='percent+label')
+                st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.info("Nenhum gasto registrado")
+    
+    with col_graf2:
+        st.subheader("📈 Evolução do Saldo")
+        if 'Data' in dados.columns and not dados.empty:
+            df_daily = dados.groupby('Data')['Valor'].sum().reset_index()
+            df_daily = df_daily.sort_values('Data')
+            df_daily['Saldo_Acumulado'] = df_daily['Valor'].cumsum()
+            
+            fig = px.line(df_daily, x='Data', y='Saldo_Acumulado', 
+                         title="Saldo Acumulado ao Longo do Tempo",
+                         markers=True,
+                         color_discrete_sequence=['#2ecc71'])
+            fig.update_layout(xaxis_title="Data", yaxis_title="Saldo (R$)")
+            fig.add_hline(y=0, line_dash="dash", line_color="red")
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.info("Adicione transações com datas para ver a evolução do saldo")
+    
+    st.markdown("---")
+    
+    # Resumo do período
+    st.subheader("📅 Resumo do Período")
+    
+    if 'Data' in dados.columns and not dados.empty:
+        data_inicio = dados['Data'].min()
+        data_fim = dados['Data'].max()
+        st.caption(f"Período analisado: {formatar_data_br(data_inicio)} a {formatar_data_br(data_fim)}")
+        
+        dados['Mes'] = dados['Data'].dt.to_period('M')
+        
+        entradas_mensais = dados[dados['Valor'] > 0].groupby('Mes')['Valor'].sum().reset_index()
+        entradas_mensais.columns = ['Mes', 'Entradas']
+        
+        saidas_mensais = dados[dados['Valor'] < 0].groupby('Mes')['Valor'].sum().abs().reset_index()
+        saidas_mensais.columns = ['Mes', 'Saídas']
+        
+        resumo_mensal = pd.merge(entradas_mensais, saidas_mensais, on='Mes', how='outer').fillna(0)
+        resumo_mensal['Saldo'] = resumo_mensal['Entradas'] - resumo_mensal['Saídas']
+        resumo_mensal['Mes'] = resumo_mensal['Mes'].astype(str)
+        
+        fig = px.bar(resumo_mensal, x='Mes', y=['Entradas', 'Saídas'], 
+                     title="Entradas vs Saídas por Mês",
+                     barmode='group',
+                     color_discrete_sequence=['#2ecc71', '#e74c3c'])
+        st.plotly_chart(fig, use_container_width=True)
+        st.dataframe(resumo_mensal, use_container_width=True, hide_index=True)
+    
+    st.markdown("---")
+    
+    # Últimas transações
+    st.subheader("📋 Últimas Transações")
+    if 'Data' in dados.columns:
+        ultimas = dados.sort_values('Data', ascending=False).head(10).copy()
+        ultimas["Valor"] = ultimas["Valor"].apply(formatar_moeda)
+        ultimas["Data"] = ultimas["Data"].apply(formatar_data_br)
+        
+        col_desc = obter_nome_descricao(ultimas)
+        colunas = ['Data']
+        if col_desc:
+            colunas.append(col_desc)
+        colunas.append('Valor')
+        colunas.append('Categoria')
+        
+        st.dataframe(ultimas[colunas], use_container_width=True, hide_index=True)
+    else:
+        st.info("Nenhuma transação registrada")
+    
+    # Top 5 gastos
+    st.subheader("🔝 Top 5 Maiores Gastos")
+    gastos_df = dados[dados["Valor"] < 0].copy()
+    if not gastos_df.empty:
+        gastos_df["Valor"] = pd.to_numeric(gastos_df["Valor"], errors='coerce')
+        gastos_df = gastos_df.dropna(subset=['Valor'])
+        
+        if not gastos_df.empty:
+            top5 = gastos_df.sort_values("Valor", ascending=True).head(5)
+            top5["Valor"] = top5["Valor"].abs().apply(formatar_moeda)
+            
+            col_desc = obter_nome_descricao(top5)
+            colunas = []
+            if col_desc:
+                colunas.append(col_desc)
+            colunas.append('Valor')
+            colunas.append('Categoria')
+            
+            st.dataframe(top5[colunas], use_container_width=True, hide_index=True)
+        else:
+            st.info("Nenhum gasto registrado")
+    else:
+        st.info("Nenhum gasto registrado")
+
+else:
+    st.info("📊 Nenhum dado disponível. Adicione transações na página de Transações!")
+    
+    with st.expander("💡 Como começar"):
+        st.markdown("""
+        **Para começar a usar o AdaptFin:**
+        
+        1. Vá para a página **💰 Transações**
+        2. Adicione suas receitas (salário, freelas)
+        3. Adicione suas despesas (aluguel, contas)
+        4. Volte aqui para ver seus dados!
+        """)
+
+st.markdown("---")
+st.caption("📊 Dashboard atualizado em tempo real")

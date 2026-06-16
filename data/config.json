@@ -1,8 +1,7 @@
 {
-  "groq_api_key": "",
-  "llm_provider": "groq",
-  "ml_ativado": true,
-  "alertas_ativos": true,
+  "salario_mensal": 0.0,
   "limite_gastos": 0.0,
-  "salario_mensal": 0.0
+  "alertas_ativos": true,
+  "ml_ativado": true,
+  "tema": "Claro"
 }
