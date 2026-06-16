@@ -2,7 +2,7 @@
 
 > **"Em vez de você se adaptar ao app, o app se adapta a você."**
 
-🚀 **Demonstração Online:** https://adaptfin-demo.streamlit.app
+🚀 **Demonstração Online:** https://adaptfin-demo-epdkfctgaxy4kevgzsfmuf.streamlit.app
 
 👨‍💻 **Desenvolvido por:** Cleber Ramos Oliveira
 
